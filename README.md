@@ -1,30 +1,18 @@
-# React + TypeScript + Vite
+# Sistema de piscinas para DIGESA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+La Dirección General de Salud Ambiental e Inocuidad Alimentaria (DIGESA), órgano de línea del Viceministerio de Salud Pública, es la Autoridad Nacional en Salud Ambiental e Inocuidad Alimentaria. Tiene como responsabilidad la elaboración de normas técnicas, así como la vigilancia y fiscalización de los factores de riesgo físicos, químicos y biológicos externos que puedan afectar la salud de las personas.
 
-Currently, two official plugins are available:
+Sin embargo, en la ciudad de Arequipa, no existe un sistema accesible y actualizado que brinde información clara a la ciudadanía sobre el estado de salubridad de las piscinas públicas y privadas. Esta carencia limita el derecho de los usuarios a conocer las condiciones sanitarias de estos espacios recreativos, lo cual representa un riesgo para la salud pública.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Compilación de la aplicación web
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
+Para compilar la aplicación web que usa React(Typescript) con Bootstrap debemos de descargar todos los node_modules
 
 ```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+npm install
 ```
+Para correr el servidor local
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+```js
+npm run dev
+```
