@@ -31,7 +31,16 @@ PROJECT_APPS = [
 ]
 
 POOL_APPS = [
-
+    'apps.pools',
+    # 'apps.inspections',
+    # 'apps.chemicals',
+    # 'apps.equipments',
+    # 'apps.maintenance',
+    # 'apps.reports',
+    # 'apps.notifications',
+    # 'apps.documents',
+    # 'apps.articles',
+    # 'apps.events',
 ]
 
 THIRD_PARTY_APPS = [
