@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "../styles/dashboard.css";
 
 const provincias = [
@@ -99,29 +100,40 @@ const Navbar: React.FC = () => {
           </button>
         </form>
 
-        <div
-          className="dropdown d-flex align-items-center"
+        <Link
+          to="/login"
+          className="text-decoration-none text-dark"
           style={{ cursor: "pointer" }}
-        >
-          <a
-            href="#"
-            className="d-flex align-items-center justify-content-center rounded-circle bg-primary text-white me-2"
-            style={{ width: "40px", height: "40px" }}
-            data-bs-toggle="dropdown"
-          >
-            <i className="bi bi-person-fill"></i>
-          </a>
-          <a
-            href="#"
-            className="text-decoration-none text-dark"
-            data-bs-toggle="dropdown"
-          >
-            Login
-          </a>
+        > 
+        <div className="container text-center">
+          <div className="row align-items-center">
+            <div className="col col-sm-3" ><i className="bi bi-person-circle fs-3"></i></div>
+            <div className="col"><span className="col">Login</span></div>
+          </div>
         </div>
+        </Link>
       </div>
     </nav>
   );
 };
 
 export default Navbar;
+
+/*
+<span
+            className="d-flex align-items-center justify-content-center rounded-circle bg-primary text-white me-2"
+            style={{ width: "40px", height: "40px" }}
+            data-bs-toggle="dropdown"
+          >
+            <i className="bi bi-person-fill"></i>
+          </span>
+          <span
+            className=" text-decoration-none text-dark"
+            data-bs-toggle="dropdown"
+          >
+            Login
+          </span>
+
+
+
+ */
