@@ -1,10 +1,8 @@
 export interface Pool {
   id: string;
   name: string;
-  position: {
-    lat: number;
-    lng: number;
-  };
+  latitude: number;
+  longitude: number;
   features: string[];
   rating: number;
   image?: string;
