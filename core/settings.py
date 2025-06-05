@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('DEBUG', default=False)
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -27,11 +27,20 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
-
+    'apps.user',
 ]
 
 POOL_APPS = [
-
+    'apps.pools',
+    # 'apps.inspections',
+    # 'apps.chemicals',
+    # 'apps.equipments',
+    # 'apps.maintenance',
+    # 'apps.reports',
+    # 'apps.notifications',
+    # 'apps.documents',
+    # 'apps.articles',
+    # 'apps.events',
 ]
 
 THIRD_PARTY_APPS = [
@@ -157,7 +166,7 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
-    'EMAIL_FRONTEND_DOMAIN': 'localhost:3000',
+    'EMAIL_FRONTEND_DOMAIN': 'localhost:5173',
     'EMAIL_FRONTEND_SITE_NAME': 'Ruway 365',
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
@@ -172,7 +181,7 @@ DJOSER = {
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:3000',],
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['http://localhost:5173',],
     'SERIALIZERS': {
         'user_create': 'apps.user.serializers.UserCreateSerializer',
         'user': 'apps.user.serializers.UserCreateSerializer',
@@ -181,7 +190,7 @@ DJOSER = {
     },
 }
 
-#AUTH_USER_MODEL = 'user.UserAccount'
+AUTH_USER_MODEL = 'user.UserAccount'
 
 if not DEBUG:
     # SECURE_SSL_REDIRECT = True
