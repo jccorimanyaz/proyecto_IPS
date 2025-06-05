@@ -5,10 +5,8 @@ export const poolsData: Pool[] = [
     {
         id: '1',
         name: 'Piscina Club Arequipa',
-        position: {
-            lat: -16.4040102,
-            lng: -71.559611
-        },
+        latitude: -16.4040102,
+        longitude: -71.559611,
         features: [
             'Agua limpia',
             'Cloración adecuada',
@@ -23,10 +21,8 @@ export const poolsData: Pool[] = [
     {
         id: '2',
         name: 'Piscina Municipal de Yanahuara',
-        position: {
-            lat: -16.3920102,
-            lng: -71.537611
-        },
+        latitude: -16.3920102,
+        longitude: -71.537611,
         features: [
             'Agua tratada',
             'Zona de descanso',
@@ -40,10 +36,8 @@ export const poolsData: Pool[] = [
     {
         id: '3',
         name: 'Piscina del Hotel Casa Andina',
-        position: {
-            lat: -16.3980102,
-            lng: -71.543611
-        },
+        latitude: -16.3980102,
+        longitude: -71.543611,
         features: [
             'Agua climatizada',
             'Servicio de bar',
