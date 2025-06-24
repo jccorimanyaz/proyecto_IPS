@@ -82,8 +82,10 @@ const Mapa: React.FC<MapProps> = ({ pools, onPoolSelect, selectedPoolId }) => {
         }
 
         pools.forEach((pool) => {
+            pool.latitude = parseFloat(pool.latitude as any);
+            pool.longitude = parseFloat(pool.longitude as any);
             if (typeof pool.latitude !== 'number' || typeof pool.longitude !== 'number') {
-                console.error(`%c[Mapa.tsx] DATOS INCORRECTOS para la piscina: "${pool.name}". Latitud o longitud inválida.`, pool);
+                console.error(`%c[Mapa.tsx] DATOS INCORRECTOS para la piscina: "${pool.commercial_name}". Latitud o longitud inválida.`, pool);
                 return; //saltamos la piscina si las coordenadas no son válidas
             }
             
@@ -97,7 +99,7 @@ const Mapa: React.FC<MapProps> = ({ pools, onPoolSelect, selectedPoolId }) => {
                 }
             });
 
-            marker.bindPopup(`<b>${pool.name}</b>`);
+            marker.bindPopup(`<b>${pool.commercial_name}</b>`);
             markersRef.current[pool.id] = marker;
         });
 
