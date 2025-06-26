@@ -1,38 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../styles/list.css';
 
-const mockData = [
-  {
-    id: 1,
-    nombre: "Piscina Municipal",
-    provincia: "Arequipa",
-    distrito: "Cercado",
-    estado: "Salubre",
-    calificacion: "4.2",
-  },
-  {
-    id: 2,
-    nombre: "Club Natación",
-    provincia: "Arequipa",
-    distrito: "Yanahuara",
-    estado: "Insalubre",
-    calificacion: "2.7",
-  },
-  {
-    id: 3,
-    nombre: "Piscina del Sur",
-    provincia: "Arequipa",
-    distrito: "Hunter",
-    estado: "En visto",
-    calificacion: "3.5",
-  },
-];
+type Pool = {
+  id: number;
+  commercial_name: string | null;
+  address: string;
+  district: string;
+  capacity: number;
+  current_state: 'HEALTHY' | 'UNHEALTHY';
+};
 
 const ListComponent = () => {
+  const [pools, setPools] = useState<Pool[]>([]);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
 
+  useEffect(() => {
+    console.log('🔍 Iniciando petición para obtener piscinas...');
+    
+    axios.get('http://127.0.0.1:8000/pool/all/')
+      .then((response) => {
+        console.log('✅ Piscinas obtenidas exitosamente:', response.data);
+        setPools(response.data);
+      })
+      .catch((error) => {
+        console.error('❌ Error al obtener las piscinas:', error);
+      });
+  }, []);
 
   const handleRowClick = (id: number) => {
+    console.log(`🖱️ Se hizo clic en la fila con ID ${id}`);
     setSelectedRow(id);
   };
 
@@ -43,39 +40,41 @@ const ListComponent = () => {
         <table className="table table-hover table-bordered align-middle text-center">
           <thead className="table-dark">
             <tr>
-              <th>Nombre</th>
-              <th>Provincia</th>
+              <th>ID</th>
+              <th>Nombre Comercial</th>
+              <th>Dirección</th>
               <th>Distrito</th>
-              <th>Estado</th>
+              <th>Capacidad</th>
+              <th>Estado Actual</th>
               <th>Calificación</th>
             </tr>
           </thead>
           <tbody>
-            {mockData.map((piscina) => (
+            {pools.map((piscina) => (
               <tr
                 key={piscina.id}
                 className={`selectable-row ${selectedRow === piscina.id ? 'table-primary' : ''}`}
                 onClick={() => handleRowClick(piscina.id)}
               >
-                <td>{piscina.nombre}</td>
-                <td>{piscina.provincia}</td>
-                <td>{piscina.distrito}</td>
+                <td>{piscina.id}</td>
+                <td>{piscina.commercial_name || 'Sin nombre'}</td>
+                <td>{piscina.address}</td>
+                <td>{piscina.district}</td>
+                <td>{piscina.capacity}</td>
                 <td>
                   <span
                     className={`badge ${
-                      piscina.estado === "Salubre"
+                      piscina.current_state === "HEALTHY"
                         ? "bg-success"
-                        : piscina.estado === "Insalubre"
-                        ? "bg-danger"
-                        : "bg-warning text-dark"
+                        : "bg-danger"
                     }`}
                   >
-                    {piscina.estado}
+                    {piscina.current_state === "HEALTHY" ? "Salubre" : "Insalubre"}
                   </span>
                 </td>
                 <td>
-                  {piscina.calificacion} / 5&nbsp;
-                  <i className="bi bi-star-fill text-warning"></i>
+                  {/* Placeholder para futura calificación */}
+                  — / 5 <i className="bi bi-star-fill text-warning"></i>
                 </td>
               </tr>
             ))}
@@ -87,3 +86,4 @@ const ListComponent = () => {
 };
 
 export default ListComponent;
+

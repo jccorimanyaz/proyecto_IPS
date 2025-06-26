@@ -28,6 +28,11 @@ class Pool(models.Model):
     last_inspection_date = models.DateField("Last Inspection Date", blank=True, null=True)
     current_state = models.CharField("Current State", max_length=20, choices=CURRENT_STATE_CHOICES, default='HEALTHY')
 
+    latitude = models.DecimalField("Latitude", max_digits=12, decimal_places=9, blank=True, null=True)
+    longitude = models.DecimalField("Longitude", max_digits=12, decimal_places=9, blank=True, null=True)
+    image_url = models.URLField("Image URL", blank=True, null=True)
+    rating = models.DecimalField("Rating (1-5)", max_digits=2, decimal_places=1, blank=True, null=True)
+    
     class Meta:
         verbose_name = "Pool"
         verbose_name_plural = "Pools"

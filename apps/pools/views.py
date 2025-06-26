@@ -10,7 +10,7 @@ from .serializers import PoolSerializer
 
 # Vista para listar piscinas por estado
 class PoolsByStateView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, state):
         pools = Pool.objects.filter(state=state)
@@ -21,7 +21,7 @@ class PoolsByStateView(APIView):
 # Vista para listar piscinas por distrito
 class PoolsByDistrictView(ListAPIView):
     serializer_class = PoolSerializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         district = self.kwargs['district']
@@ -30,7 +30,7 @@ class PoolsByDistrictView(ListAPIView):
 
 # Vista para estadísticas de piscinas por estado
 class PoolStatisticsView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         stats = Pool.objects.values('state').annotate(count=Count('id'))
@@ -41,6 +41,27 @@ class PoolStatisticsView(APIView):
 class PoolFilterView(ListAPIView):
     queryset = Pool.objects.all()
     serializer_class = PoolSerializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['state', 'current_state', 'district']
+
+class AllPoolsView(ListAPIView):
+    queryset = Pool.objects.all()
+    serializer_class = PoolSerializer
+    #permission_classes = [IsAuthenticated]
+    
+class PoolListOrDetailView(APIView):
+    #permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk=None):
+        if pk is not None:
+            try:
+                pool = Pool.objects.get(pk=pk)
+                serializer = PoolSerializer(pool)
+                return Response(serializer.data)
+            except Pool.DoesNotExist:
+                return Response({"detail": "Pool not found."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            pools = Pool.objects.all()
+            serializer = PoolSerializer(pools, many=True)
+            return Response(serializer.data)
