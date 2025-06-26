@@ -9,7 +9,6 @@ export interface Pool {
   image_url?: string;
   rating: number;
   current_state: string;
-
 }
 
 export interface MapProps {
