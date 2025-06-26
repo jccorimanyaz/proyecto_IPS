@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../styles/home.css';
 import Mapa from './Mapa';
 import { Pool } from '../types/Pool';
+import { Link } from "react-router-dom";
 import axios from 'axios';
 
 function HomeComponent() {
@@ -38,7 +39,8 @@ function HomeComponent() {
 
       <div className="pool-list">
         {selectedPool ? (
-          <div className="card d-flex flex-row align-items-center p-3 gap-3">
+          <Link
+          to={`/pool/${selectedPool.id}`} className="card d-flex flex-row align-items-center p-3 gap-3  text-decoration-none">
             <div className="pool-image rounded bg-secondary" style={{
               width: '120px',
               height: '120px',
@@ -67,7 +69,7 @@ function HomeComponent() {
               ))}
               <i className="bi bi-heart text-danger px-4 fs-4 "></i>
             </div>
-          </div>
+          </Link>
         ) : (
           <div className="card p-3 text-center text-muted">
             <p className="mb-0">Haz clic en un marcador del mapa para ver los detalles.</p>

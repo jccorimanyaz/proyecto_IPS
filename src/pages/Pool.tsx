@@ -1,19 +1,21 @@
 import Navbar from "../components/Navbar";
-import PoolComponent from "../components/PoolComponent";
 import Sidebar from "../components/Sidebar";
+import '../styles/dashboard.css';
+import PoolComponent from "../components/PoolComponent";
 
-function Pool() {
-    return(
-      <div className="wrapper">
+
+const Pool = () => {
+  return (
+    <div className="wrapper">
       <Sidebar />
       <div className="main">
-        <Navbar />
+        <Navbar/>
         <main className="content px-3 py-4">
-            <PoolComponent />
+            <PoolComponent/>
         </main> 
       </div>
     </div>
-    );
-  }
-  
-  export default Pool;
+  );
+};
+
+export default Pool;

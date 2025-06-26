@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
-import '../styles/dashboard.css'
-import {Link, BrowserRouter, Route} from 'react-router-dom'
-import List from '../pages/List'
+import '../styles/dashboard.css';
+import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <aside id="sidebar" className={expanded ? 'expand' : ''}>
+    <aside
+      id="sidebar"
+      className={expanded ? 'expand' : ''}
+      onMouseEnter={() => setExpanded(true)}
+      onMouseLeave={() => setExpanded(false)}
+    >
       <div className="d-flex">
-        <button className="toggle-btn" onClick={() => setExpanded(!expanded)}>
+        <button
+          className="toggle-btn"
+          onClick={() => setExpanded(prev => !prev)}
+        >
           <i className="lni lni-grid-alt"></i>
         </button>
         <div className="sidebar-logo">
-          <Link to="/" className="sidebar-logo-link text-decoration-none">Home</Link>
+          <Link to="/" className="sidebar-logo-link text-decoration-none">
+            Home
+          </Link>
         </div>
       </div>
       <ul className="sidebar-nav">
@@ -47,3 +56,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
