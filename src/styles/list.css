@@ -1,8 +1,0 @@
-.selectable-row {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.selectable-row:hover {
-  background-color: rgba(0, 123, 255, 0.1);
-}
