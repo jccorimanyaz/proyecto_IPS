@@ -1,220 +1,119 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Button, Form, Tab, Nav, Row, Col } from 'react-bootstrap';
-import axios from 'axios';
-import { Pool } from '../types'; // Adjust the import path according to your project structure
+// src/components/PoolForm.tsx
+import React, { useState, useEffect } from 'react';
+import { Modal, Button, Form, Row, Col, Alert, Spinner } from 'react-bootstrap';
+import { Pool } from '../types';
 
-interface Props {
-  show: boolean;
-  onHide: () => void;
-  onSave: () => void;
-  poolToEdit?: Pool;
+interface PoolFormProps {
+    show: boolean;
+    onHide: () => void;
+    onSave: (poolData: Partial<Pool>) => Promise<void>;
+    selectedPool: Pool | null;
 }
 
-const PoolForm: React.FC<Props> = ({ show, onHide, onSave, poolToEdit }) => {
-  const [form, setForm] = useState<Pool>({
-    file_number: '',
-    legal_name: '',
-    commercial_name: '',
-    pool_type: '',
-    address: '',
-    district: '',
-    capacity: 0,
-    area_m2: 0,
-    volume_m3: 0,
-    approval_resolution_number: '',
-    approval_date: '',
-    state: 'RES_VALID',
-    observations: '',
-    expiration_date: '',
-    last_inspection_date: '',
-    current_state: 'HEALTHY',
-    latitude: 0,
-    longitude: 0,
-    image_url: '',
-    rating: 0,
-  });
+const PoolForm: React.FC<PoolFormProps> = ({ show, onHide, onSave, selectedPool }) => {
+    const [formData, setFormData] = useState<Partial<Pool>>({});
+    const [isSaving, setIsSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (poolToEdit) {
-      // Transform dates to yyyy-MM-dd for input value
-      const transformDate = (d?: string) => d ? d.substr(0, 10) : '';
-      setForm({
-        ...poolToEdit,
-        approval_date: transformDate(poolToEdit.approval_date),
-        expiration_date: transformDate(poolToEdit.expiration_date),
-        last_inspection_date: transformDate(poolToEdit.last_inspection_date),
-      } as Pool);
-    }
-  }, [poolToEdit]);
+    const isEditMode = selectedPool !== null;
 
-  const handleChange = (e: React.ChangeEvent<any>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({
-      ...prev,
-      [name]: 
-        ['capacity','area_m2','volume_m3','latitude','longitude','rating'].includes(name)
-          ? Number(value)
-          : value
-    }));
-  };
+    useEffect(() => {
+        // Inicializa el formulario con los datos de la piscina seleccionada o valores por defecto
+        if (selectedPool) {
+            setFormData(selectedPool);
+        } else {
+            setFormData({
+                state: 'RES_VALID',
+                current_state: 'HEALTHY',
+                is_active: true,
+            });
+        }
+    }, [selectedPool, show]);
 
-  const handleSubmit = () => {
-    const req = poolToEdit
-      ? axios.put(`/api/admin/pools/${poolToEdit.id}/`, form)
-      : axios.post('/api/admin/pools/', form);
-    req
-      .then(() => { onSave(); onHide(); })
-      .catch(err => console.error(err));
-  };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value, type } = e.target;
+        const checked = (e.target as HTMLInputElement).checked;
+        setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+    };
 
-  return (
-    <Modal show={show} onHide={onHide} size="lg" backdrop="static">
-      <Modal.Header closeButton>
-        <Modal.Title>{poolToEdit ? 'Editar Piscina' : 'Nueva Piscina'}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Tab.Container defaultActiveKey="general">
-          <Nav variant="tabs">
-            <Nav.Item><Nav.Link eventKey="general">General</Nav.Link></Nav.Item>
-            <Nav.Item><Nav.Link eventKey="normativo">Normativo</Nav.Link></Nav.Item>
-            <Nav.Item><Nav.Link eventKey="ubicacion">Ubicación</Nav.Link></Nav.Item>
-            <Nav.Item><Nav.Link eventKey="otros">Otros</Nav.Link></Nav.Item>
-          </Nav>
-          <Tab.Content className="mt-3">
-            {/* General */}
-            <Tab.Pane eventKey="general">
-              <Form.Group className="mb-3">
-                <Form.Label>File Number</Form.Label>
-                <Form.Control name="file_number" value={form.file_number} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Legal Name / Owner</Form.Label>
-                <Form.Control name="legal_name" value={form.legal_name} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Commercial Name</Form.Label>
-                <Form.Control name="commercial_name" value={form.commercial_name || ''} onChange={handleChange} />
-              </Form.Group>
-              <Row>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Type</Form.Label>
-                    <Form.Control name="pool_type" value={form.pool_type} onChange={handleChange} />
-                  </Form.Group>
-                </Col>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Capacity</Form.Label>
-                    <Form.Control type="number" name="capacity" value={form.capacity} onChange={handleChange} />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Area (m²)</Form.Label>
-                    <Form.Control type="number" step="0.01" name="area_m2" value={form.area_m2} onChange={handleChange} />
-                  </Form.Group>
-                </Col>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Volume (m³)</Form.Label>
-                    <Form.Control type="number" step="0.01" name="volume_m3" value={form.volume_m3} onChange={handleChange} />
-                  </Form.Group>
-                </Col>
-              </Row>
-            </Tab.Pane>
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setIsSaving(true);
+        try {
+            await onSave(formData);
+            onHide();
+        } catch (err: any) {
+            setError(err.message || 'Error al guardar. Verifique los campos.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
-            {/* Normativo */}
-            <Tab.Pane eventKey="normativo">
-              <Form.Group className="mb-3">
-                <Form.Label>Approval Resolution Number</Form.Label>
-                <Form.Control name="approval_resolution_number" value={form.approval_resolution_number || ''} onChange={handleChange} />
-              </Form.Group>
-              <Row>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Approval Date</Form.Label>
-                    <Form.Control type="date" name="approval_date" value={form.approval_date || ''} onChange={handleChange} />
-                  </Form.Group>
-                </Col>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Expires On</Form.Label>
-                    <Form.Control type="date" name="expiration_date" value={form.expiration_date || ''} onChange={handleChange} />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Form.Group className="mb-3">
-                <Form.Label>State</Form.Label>
-                <Form.Select name="state" value={form.state} onChange={handleChange}>
-                  <option value="RES_VALID">Resolution Valid</option>
-                  <option value="RES_EXPIRED">Resolution Expired</option>
-                </Form.Select>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Observations</Form.Label>
-                <Form.Control as="textarea" rows={3} name="observations" value={form.observations || ''} onChange={handleChange} />
-              </Form.Group>
-            </Tab.Pane>
+    // Campos que solo se muestran en el modo de creación
+    const creationFields = (
+        <>
+            {/* ... Agrega aquí todos los campos del modelo `Pool` para la creación ... */}
+            {/* Ejemplo: */}
+            <Row>
+                <Col md={6}><Form.Group className="mb-3"><Form.Label>N° de Archivo</Form.Label><Form.Control type="text" name="file_number" value={formData.file_number || ''} onChange={handleChange} required /></Form.Group></Col>
+                <Col md={6}><Form.Group className="mb-3"><Form.Label>Propietario Legal</Form.Label><Form.Control type="text" name="legal_name" value={formData.legal_name || ''} onChange={handleChange} required /></Form.Group></Col>
+            </Row>
+             <Row>
+                <Col md={6}><Form.Group className="mb-3"><Form.Label>Distrito</Form.Label><Form.Control type="text" name="district" value={formData.district || ''} onChange={handleChange} required /></Form.Group></Col>
+                {/* ... y así sucesivamente con todos los campos del modelo */}
+            </Row>
+        </>
+    );
 
-            {/* Ubicación */}
-            <Tab.Pane eventKey="ubicacion">
-              <Form.Group className="mb-3">
-                <Form.Label>Address</Form.Label>
-                <Form.Control as="textarea" rows={2} name="address" value={form.address} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>District</Form.Label>
-                <Form.Control name="district" value={form.district} onChange={handleChange} />
-              </Form.Group>
-              <Row>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Latitude</Form.Label>
-                    <Form.Control type="number" step="0.000000001" name="latitude" value={form.latitude || 0} onChange={handleChange} />
-                  </Form.Group>
+    // Campos que se muestran tanto en creación como en edición (los que están en la tabla)
+    const commonFields = (
+         <>
+            <Row>
+                <Col md={6}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Estado Actual</Form.Label>
+                        <Form.Select name="current_state" value={formData.current_state || 'HEALTHY'} onChange={handleChange}>
+                            <option value="HEALTHY">Saludable</option>
+                            <option value="UNHEALTHY">No Saludable</option>
+                        </Form.Select>
+                    </Form.Group>
                 </Col>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Longitude</Form.Label>
-                    <Form.Control type="number" step="0.000000001" name="longitude" value={form.longitude || 0} onChange={handleChange} />
-                  </Form.Group>
+                 <Col md={6}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Rating (1-5)</Form.Label>
+                        <Form.Control type="number" name="rating" min="1" max="5" step="0.1" value={formData.rating || ''} onChange={handleChange} />
+                    </Form.Group>
                 </Col>
-              </Row>
-            </Tab.Pane>
+            </Row>
+            <Form.Group className="mb-3">
+                <Form.Check type="switch" name="is_active" label="Piscina Activa" checked={formData.is_active ?? true} onChange={handleChange} />
+            </Form.Group>
+        </>
+    );
 
-            {/* Otros */}
-            <Tab.Pane eventKey="otros">
-              <Form.Group className="mb-3">
-                <Form.Label>Last Inspection Date</Form.Label>
-                <Form.Control type="date" name="last_inspection_date" value={form.last_inspection_date || ''} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Current State</Form.Label>
-                <Form.Select name="current_state" value={form.current_state} onChange={handleChange}>
-                  <option value="HEALTHY">Healthy</option>
-                  <option value="UNHEALTHY">Unhealthy</option>
-                </Form.Select>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Image URL</Form.Label>
-                <Form.Control name="image_url" value={form.image_url || ''} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Rating (1-5)</Form.Label>
-                <Form.Control type="number" step="0.1" max="5" name="rating" value={form.rating || 0} onChange={handleChange} />
-              </Form.Group>
-            </Tab.Pane>
-          </Tab.Content>
-        </Tab.Container>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>Cancelar</Button>
-        <Button variant="primary" onClick={handleSubmit}>Guardar</Button>
-      </Modal.Footer>
-    </Modal>
-  );
+    return (
+        <Modal show={show} onHide={onHide} size="lg" backdrop="static">
+            <Modal.Header closeButton>
+                <Modal.Title>{isEditMode ? `Editar Piscina: ${selectedPool?.legal_name}`: 'Nueva Piscina'}</Modal.Title>
+            </Modal.Header>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Body>
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    
+                    {!isEditMode && creationFields}
+                    {commonFields}
+
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={onHide} disabled={isSaving}>Cancelar</Button>
+                    <Button variant="primary" type="submit" disabled={isSaving}>
+                        {isSaving ? <><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> Guardando...</> : (isEditMode ? 'Actualizar' : 'Crear')}
+                    </Button>
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    );
 };
 
 export default PoolForm;

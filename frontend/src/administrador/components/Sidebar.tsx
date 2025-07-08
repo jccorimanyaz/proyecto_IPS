@@ -20,7 +20,7 @@ const Sidebar: React.FC = () => (
       </li>
       <li>
         <NavLink
-            to="/admin/list"
+            to="/admin/pools"
             className={({ isActive }) => 
                 `nav-link text-white${isActive ? ' active' : ''}`
             }
