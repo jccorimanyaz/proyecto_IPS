@@ -1,4 +1,3 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import {
   BrowserRouter as Router,
   Route,
@@ -19,6 +18,9 @@ import { loadUser } from "./features/auth/authApi";
 import "./styles/index.css";
 
 import Pool from "./containers/Pool";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
+import Dashboard from "./administrador/views/Dashboard"
+import PoolManager from "./administrador/views/PoolManager"
 
 function App() {
   const dispatch = useAppDispatch();
