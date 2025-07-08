@@ -72,7 +72,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     role = models.CharField(max_length=20, choices=roles, default="citizen")
 
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 

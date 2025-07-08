@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import '../../styles/dashboard.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { logout } from '../../features/auth/authSlice';
 
 const Sidebar = () => {
@@ -9,15 +9,12 @@ const Sidebar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const user = useAppSelector((state) => state.auth.user);
+
   const handleLogout = () => {
-    // 1. Limpiar tokens del localStorage
     localStorage.removeItem('access');
     localStorage.removeItem('refresh');
-
-    // 2. Limpiar el estado de Redux
     dispatch(logout());
-
-    // 3. Redirigir al login
     navigate('/login');
   };
 
@@ -45,7 +42,7 @@ const Sidebar = () => {
         <li className="sidebar-item">
           <Link to="/list" className="sidebar-link text-decoration-none">
             <i className="lni lni-list"></i>
-            <span>Lista de Piscinas</span>
+            <span>Piscinas</span>
           </Link>
         </li>
         <li className="sidebar-item">
@@ -60,15 +57,25 @@ const Sidebar = () => {
             <span>Contáctanos</span>
           </Link>
         </li>
+
+        {user && (user.role === 'admin' || user.role === 'inspector') && (
+          <li className="sidebar-item">
+            <Link to="/admin/dashboard" className="sidebar-link text-decoration-none">
+              <i className="lni lni-cog"></i>
+              <span>Administrador</span>
+            </Link>
+          </li>
+        )}
       </ul>
       <div className="sidebar-footer">
-            <button onClick={handleLogout} className="sidebar-link text-decoration-none">
-                    <i className="lni lni-exit"></i>
-                    <span>Logout</span>
-                </button>
-        </div>
+        <button onClick={handleLogout} className="sidebar-link text-decoration-none">
+          <i className="lni lni-exit"></i>
+          <span>Logout</span>
+        </button>
+      </div>
     </aside>
   );
 };
 
 export default Sidebar;
+
